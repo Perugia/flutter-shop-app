@@ -25,7 +25,7 @@ class _OrderItemState extends State<OrderItem> {
       child: Column(
         children: <Widget>[
           ListTile(
-            title: Text('\$${widget.order.amount}'),
+            title: Text('\$${widget.order.amount.round()}'),
             subtitle: Text(
               DateFormat('dd/MM/yyyy hh:mm').format(widget.order.dateTime),
             ),
@@ -42,7 +42,7 @@ class _OrderItemState extends State<OrderItem> {
             Container(
               padding: const EdgeInsets.only(
                   left: 15, right: 15, top: 4, bottom: 15),
-              height: min(widget.order.products.length * 35.0 + 10, 100),
+              height: min(widget.order.products.length * 35.0 + 10, 110),
               child: ListView(
                 children: widget.order.products
                     .map(

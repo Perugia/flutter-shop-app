@@ -38,6 +38,29 @@ class CartItem extends StatelessWidget {
         ),
       ),
       direction: DismissDirection.endToStart,
+      confirmDismiss: (direction) {
+        return showDialog(
+            context: context,
+            builder: (ctx) => AlertDialog(
+                  title: const Text("Are you sure?"),
+                  content:
+                      const Text("Do you want to remove the item from cart?"),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(ctx).pop(false);
+                      },
+                      child: const Text("No"),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(ctx).pop(true);
+                      },
+                      child: const Text("Yes"),
+                    )
+                  ],
+                ));
+      },
       onDismissed: (direction) {
         Provider.of<Cart>(context, listen: false).removeItem(productId);
       },
@@ -48,18 +71,62 @@ class CartItem extends StatelessWidget {
         ),
         child: Padding(
           padding: const EdgeInsets.all(8),
-          child: ListTile(
-            leading: CircleAvatar(
-              child: Padding(
-                padding: const EdgeInsets.all(5),
-                child: FittedBox(
-                  child: Text('\$$price'),
+          child: SizedBox(
+            height: 90,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      height: 74,
+                      width: 70,
+                      padding: const EdgeInsets.all(8),
+                      child: CircleAvatar(
+                        child: Padding(
+                          padding: const EdgeInsets.all(4),
+                          child: FittedBox(
+                            child: Text(
+                              '\$$price',
+                              style: const TextStyle(fontSize: 24),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(title,
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.bold)),
+                          Text('Total: \$${(price * quantity)}')
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-              ),
+                Row(
+                  children: [
+                    IconButton(
+                        onPressed: () {
+                          Provider.of<Cart>(context, listen: false)
+                              .increase(productId);
+                        },
+                        icon: const Icon(Icons.add)),
+                    Text('$quantity x'),
+                    IconButton(
+                        onPressed: () {
+                          Provider.of<Cart>(context, listen: false)
+                              .decreaseItem(productId);
+                        },
+                        icon: const Icon(Icons.remove)),
+                  ],
+                ),
+              ],
             ),
-            title: Text(title),
-            subtitle: Text('Total: \$${(price * quantity)}'),
-            trailing: Text('$quantity x'),
           ),
         ),
       ),

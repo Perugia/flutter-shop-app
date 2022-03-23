@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../screens/product_detail_screen.dart';
 import '../providers/product.dart';
 import '../providers/cart.dart';
+import './custom_snackbar.dart';
 
 class ProductItem extends StatefulWidget {
   const ProductItem({Key? key, required this.updateFav}) : super(key: key);
@@ -58,7 +59,29 @@ class _ProductItemState extends State<ProductItem> {
               Icons.shopping_cart,
             ),
             onPressed: () {
+              if (cart.items.containsKey(product.id)) {
+                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                customSnack(
+                  context: context,
+                  content: const Text(
+                    'Already in your cart!',
+                    textAlign: TextAlign.center,
+                  ),
+                );
+                return;
+              }
               cart.addItem(product.id, product.price, product.title);
+              ScaffoldMessenger.of(context).hideCurrentSnackBar();
+              customSnack(
+                context: context,
+                content: const Text('Successfully added to cart!'),
+                action: SnackBarAction(
+                    label: "UNDO",
+                    onPressed: () {
+                      cart.removeItem(product.id);
+                    }),
+                duration: const Duration(seconds: 3),
+              );
             },
             color: Theme.of(context).colorScheme.secondary,
           ),

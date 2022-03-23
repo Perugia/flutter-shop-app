@@ -8,6 +8,7 @@ import './providers/products.dart';
 import './providers/cart.dart';
 import './providers/orders.dart';
 import './screens/orders_screen.dart';
+import './screens/user_products_screen.dart';
 
 void main() => runApp(const MyApp());
 
@@ -37,10 +38,34 @@ class MyApp extends StatelessWidget {
                 .copyWith(secondary: Colors.amber),
           ),
           home: const ProductsOverviewScreen(),
-          routes: {
-            ProductDetailScreen.routeName: (ctx) => const ProductDetailScreen(),
-            CartScreen.routeName: (ctx) => const CartScreen(),
-            OrdersScreen.routeName: (ctx) => const OrdersScreen(),
+          onGenerateRoute: (settings) {
+            switch (settings.name) {
+              case ProductDetailScreen.routeName:
+                return PageRouteBuilder(
+                  settings: settings,
+                  pageBuilder: (_, __, ___) => const ProductDetailScreen(),
+                );
+              case CartScreen.routeName:
+                return PageRouteBuilder(
+                  settings: settings,
+                  pageBuilder: (_, __, ___) => const CartScreen(),
+                );
+              case OrdersScreen.routeName:
+                return PageRouteBuilder(
+                  settings: settings,
+                  pageBuilder: (_, __, ___) => const OrdersScreen(),
+                );
+              case UserProductsScreen.routeName:
+                return PageRouteBuilder(
+                  settings: settings,
+                  pageBuilder: (_, __, ___) => const UserProductsScreen(),
+                );
+              default:
+                return PageRouteBuilder(
+                  settings: settings,
+                  pageBuilder: (_, __, ___) => const ProductsOverviewScreen(),
+                );
+            }
           }),
     );
   }

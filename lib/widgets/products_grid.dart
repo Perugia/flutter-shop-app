@@ -27,25 +27,41 @@ class _ProductsGridState extends State<ProductsGrid> {
     final productsData = Provider.of<Products>(context);
     final products =
         widget.showFavs ? productsData.favoriteItems : productsData.items;
-    return GridView.builder(
-      padding: const EdgeInsets.all(10.0),
-      itemCount: products.length,
-      itemBuilder: (ctx, i) => ChangeNotifierProvider.value(
-        // builder: (c) => products[i],
-        value: products[i],
-        child: ProductItem(
-          updateFav: updateFav,
-          // products[i].id,
-          // products[i].title,
-          // products[i].imageUrl,
-        ),
-      ),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        childAspectRatio: 3 / 2,
-        crossAxisSpacing: 10,
-        mainAxisSpacing: 10,
-      ),
-    );
+    return products.isEmpty
+        ? Column(
+            children: const [
+              SizedBox(
+                height: 100,
+                width: double.infinity,
+                child: Center(
+                  child: Text(
+                    "You don't have any favorite products.",
+                    style: TextStyle(fontSize: 18),
+                  ),
+                ),
+              ),
+              Icon(Icons.hourglass_empty_sharp)
+            ],
+          )
+        : GridView.builder(
+            padding: const EdgeInsets.all(10.0),
+            itemCount: products.length,
+            itemBuilder: (ctx, i) => ChangeNotifierProvider.value(
+              // builder: (c) => products[i],
+              value: products[i],
+              child: ProductItem(
+                updateFav: updateFav,
+                // products[i].id,
+                // products[i].title,
+                // products[i].imageUrl,
+              ),
+            ),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              childAspectRatio: 3 / 2,
+              crossAxisSpacing: 10,
+              mainAxisSpacing: 10,
+            ),
+          );
   }
 }

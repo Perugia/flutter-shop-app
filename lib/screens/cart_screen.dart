@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import '../providers/cart.dart' show Cart;
 import '../widgets/cart_item.dart';
 import '../providers/orders.dart';
+import '../widgets/custom_snackbar.dart';
 
 class CartScreen extends StatefulWidget {
   static const routeName = '/cart';
@@ -45,6 +46,44 @@ class _CartScreenState extends State<CartScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Your Cart'),
+        actions: [
+          IconButton(
+              onPressed: () {
+                cart.items.values.isNotEmpty
+                    ? showDialog(
+                        context: context,
+                        builder: (ctx) => AlertDialog(
+                              title: const Text("Are you sure?"),
+                              content: const Text(
+                                  "Do you want to remove all items in the cart?"),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(ctx).pop();
+                                  },
+                                  child: const Text("No"),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    cart.clear();
+                                    Navigator.of(ctx).pop();
+                                  },
+                                  child: const Text("Yes"),
+                                )
+                              ],
+                            ))
+                    : customSnack(
+                        context: context,
+                        content: const Text(
+                          'Your cart is empty!',
+                          textAlign: TextAlign.center,
+                        ),
+                      );
+              },
+              icon: const Icon(
+                Icons.delete,
+              ))
+        ],
       ),
       body: Column(
         children: <Widget>[
@@ -55,6 +94,9 @@ class _CartScreenState extends State<CartScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
+                  const SizedBox(
+                    width: 20,
+                  ),
                   const Text(
                     'Total',
                     style: TextStyle(fontSize: 20),
@@ -80,14 +122,22 @@ class _CartScreenState extends State<CartScreen> {
                             cart.items.values.toList(),
                             cart.totalAmount,
                           );
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                content: Text('Your order is successful!')),
+                          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                          customSnack(
+                            context: context,
+                            content: const Text(
+                              'Your order is successful!',
+                              textAlign: TextAlign.center,
+                            ),
                           );
                         } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                content: Text('Your cart is empty!')),
+                          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                          customSnack(
+                            context: context,
+                            content: const Text(
+                              'Your cart is empty!',
+                              textAlign: TextAlign.center,
+                            ),
                           );
                         }
                         cart.clear();
