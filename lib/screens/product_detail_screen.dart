@@ -31,13 +31,15 @@ class ProductDetailScreen extends StatelessWidget {
               height: 300,
               width: double.infinity,
               child: Image.network(
-                loadedProduct.imageUrl,
+                loadedProduct.imageUrl != ""
+                    ? loadedProduct.imageUrl
+                    : "https://miro.medium.com/max/400/1*UL9RWkTUtJlyHW7kGm20hQ.png",
                 fit: BoxFit.cover,
               ),
             ),
             const SizedBox(height: 10),
             Text(
-              '\$${loadedProduct.price}',
+              '${loadedProduct.price} TL',
               style: const TextStyle(
                 color: Colors.grey,
                 fontSize: 20,

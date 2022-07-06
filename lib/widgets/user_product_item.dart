@@ -1,38 +1,63 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-class UserProductItem extends StatelessWidget {
+import '../screens/edit_product_screen.dart';
+import '../providers/products.dart';
+
+class UserProductItem extends StatefulWidget {
+  final String id;
   final String title;
   final String imageUrl;
 
-  const UserProductItem(this.title, this.imageUrl, {Key? key})
-      : super(key: key);
+  UserProductItem(this.id, this.title, this.imageUrl);
+
+  @override
+  State<UserProductItem> createState() => _UserProductItemState();
+}
+
+class _UserProductItemState extends State<UserProductItem> {
+  //var _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
+    final scaffold = ScaffoldMessenger.of(context);
     return ListTile(
-      title: Text(title),
+      title: Text(widget.title),
       leading: CircleAvatar(
-        backgroundImage: NetworkImage(imageUrl),
+        backgroundImage: NetworkImage(widget.imageUrl),
       ),
-      trailing: SizedBox(
-        width: 110,
+      trailing: Container(
+        width: 100,
         child: Row(
-          children: [
+          children: <Widget>[
             IconButton(
-                onPressed: () {},
-                icon: Icon(
-                  Icons.edit,
-                  color: Theme.of(context).colorScheme.primary,
-                )),
-            const SizedBox(
-              width: 10,
+              icon: Icon(Icons.edit),
+              onPressed: () {
+                Navigator.of(context).pushNamed(EditProductScreen.routeName,
+                    arguments: widget.id);
+              },
+              color: Theme.of(context).primaryColor,
             ),
             IconButton(
-                onPressed: () {},
-                icon: Icon(
-                  Icons.delete,
-                  color: Theme.of(context).errorColor,
-                )),
+              icon: Icon(Icons.delete),
+              onPressed: () async {
+                try {
+                  await Provider.of<Products>(context, listen: false)
+                      .deleteProduct(widget.id);
+                } catch (e) {
+                  scaffold.hideCurrentSnackBar();
+                  scaffold.showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        'Deleting failed!',
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  );
+                }
+              },
+              color: Theme.of(context).errorColor,
+            ),
           ],
         ),
       ),

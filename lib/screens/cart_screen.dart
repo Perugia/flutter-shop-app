@@ -49,7 +49,7 @@ class _CartScreenState extends State<CartScreen> {
         actions: [
           IconButton(
               onPressed: () {
-                cart.items.values.isNotEmpty
+                cart.totalAmount > 0
                     ? showDialog(
                         context: context,
                         builder: (ctx) => AlertDialog(
@@ -104,7 +104,7 @@ class _CartScreenState extends State<CartScreen> {
                   const Spacer(),
                   Chip(
                     label: Text(
-                      '\$${cart.totalAmount.toStringAsFixed(2)}',
+                      '${cart.totalAmount.toStringAsFixed(2)} TL',
                       style: TextStyle(
                         color:
                             Theme.of(context).primaryTextTheme.headline6!.color,
@@ -116,33 +116,42 @@ class _CartScreenState extends State<CartScreen> {
                     ignoring: ignoring,
                     child: TextButton(
                       child: const Text('ORDER NOW'),
-                      onPressed: () {
-                        if (cart.items.values.isNotEmpty) {
-                          Provider.of<Orders>(context, listen: false).addOrder(
-                            cart.items.values.toList(),
-                            cart.totalAmount,
-                          );
-                          ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                          customSnack(
-                            context: context,
-                            content: const Text(
-                              'Your order is successful!',
-                              textAlign: TextAlign.center,
-                            ),
-                          );
-                        } else {
-                          ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                          customSnack(
-                            context: context,
-                            content: const Text(
-                              'Your cart is empty!',
-                              textAlign: TextAlign.center,
-                            ),
-                          );
-                        }
-                        cart.clear();
-                        setIgnoring(!ignoring);
-                      },
+                      onPressed: cart.totalAmount <= 0
+                          ? null
+                          : () async {
+                              var isWrong = true;
+                              await Provider.of<Orders>(context, listen: false)
+                                  .addOrder(
+                                cart.items.values.toList(),
+                                cart.totalAmount,
+                              )
+                                  .catchError((status) {
+                                isWrong = false;
+                                print("false");
+                                ScaffoldMessenger.of(context)
+                                    .hideCurrentSnackBar();
+                                customSnack(
+                                  context: context,
+                                  content: const Text(
+                                    'An error occurred while executing the order.',
+                                    textAlign: TextAlign.center,
+                                  ),
+                                );
+                              });
+
+                              if (isWrong == true) {
+                                ScaffoldMessenger.of(context)
+                                    .hideCurrentSnackBar();
+                                customSnack(
+                                  context: context,
+                                  content: const Text(
+                                    'Your order is successful!',
+                                    textAlign: TextAlign.center,
+                                  ),
+                                );
+                                cart.clear();
+                              }
+                            },
                       style: TextButton.styleFrom(
                           primary: Theme.of(context).colorScheme.primary),
                     ),

@@ -87,7 +87,7 @@ class CartItem extends StatelessWidget {
                           padding: const EdgeInsets.all(4),
                           child: FittedBox(
                             child: Text(
-                              '\$$price',
+                              '$price TL',
                               style: const TextStyle(fontSize: 24),
                             ),
                           ),
@@ -99,10 +99,10 @@ class CartItem extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(title,
+                          Text(formatTextResp(title),
                               style:
                                   const TextStyle(fontWeight: FontWeight.bold)),
-                          Text('Total: \$${(price * quantity)}')
+                          Text('Total: ${(price * quantity)} TL')
                         ],
                       ),
                     ),
@@ -131,5 +131,13 @@ class CartItem extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String formatTextResp(String text) {
+    String formattedText = text;
+    if (text.length > 20) {
+      formattedText = formattedText.substring(0, 20) + "...";
+    }
+    return formattedText;
   }
 }

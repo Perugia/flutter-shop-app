@@ -9,6 +9,7 @@ import './providers/cart.dart';
 import './providers/orders.dart';
 import './screens/orders_screen.dart';
 import './screens/user_products_screen.dart';
+import './screens/edit_product_screen.dart';
 
 void main() => runApp(const MyApp());
 
@@ -19,14 +20,14 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider.value(
-          value: Products(),
+        ChangeNotifierProvider(
+          create: (ctx) => Products(),
         ),
-        ChangeNotifierProvider.value(
-          value: Cart(),
+        ChangeNotifierProvider(
+          create: (ctx) => Cart(),
         ),
-        ChangeNotifierProvider.value(
-          value: Orders(),
+        ChangeNotifierProvider(
+          create: (ctx) => Orders(),
         ),
       ],
       child: MaterialApp(
@@ -37,7 +38,7 @@ class MyApp extends StatelessWidget {
             colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.teal)
                 .copyWith(secondary: Colors.amber),
           ),
-          home: const ProductsOverviewScreen(),
+          home: ProductsOverviewScreen(),
           onGenerateRoute: (settings) {
             switch (settings.name) {
               case ProductDetailScreen.routeName:
@@ -58,7 +59,17 @@ class MyApp extends StatelessWidget {
               case UserProductsScreen.routeName:
                 return PageRouteBuilder(
                   settings: settings,
-                  pageBuilder: (_, __, ___) => const UserProductsScreen(),
+                  pageBuilder: (_, __, ___) => UserProductsScreen(),
+                );
+              case EditProductScreen.routeName:
+                return PageRouteBuilder(
+                  settings: settings,
+                  pageBuilder: (_, __, ___) => EditProductScreen(),
+                );
+              case "/home":
+                return PageRouteBuilder(
+                  settings: settings,
+                  pageBuilder: (_, __, ___) => ProductsOverviewScreen(),
                 );
               default:
                 return PageRouteBuilder(

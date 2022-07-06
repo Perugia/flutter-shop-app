@@ -32,7 +32,9 @@ class _ProductItemState extends State<ProductItem> {
             );
           },
           child: Image.network(
-            product.imageUrl,
+            product.imageUrl != ""
+                ? product.imageUrl
+                : "https://miro.medium.com/max/400/1*UL9RWkTUtJlyHW7kGm20hQ.png",
             fit: BoxFit.cover,
           ),
         ),
@@ -45,7 +47,6 @@ class _ProductItemState extends State<ProductItem> {
               ),
               color: Theme.of(context).colorScheme.secondary,
               onPressed: () {
-                //product.toggleFavoriteStatus();
                 widget.updateFav(product);
               },
             ),

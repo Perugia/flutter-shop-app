@@ -16,9 +16,9 @@ class ProductsGrid extends StatefulWidget {
 }
 
 class _ProductsGridState extends State<ProductsGrid> {
-  void updateFav(Product products) {
+  void updateFav(Product product) {
     setState(() {
-      products.toggleFavoriteStatus();
+      product.toggleFavoriteStatus();
     });
   }
 
@@ -28,16 +28,21 @@ class _ProductsGridState extends State<ProductsGrid> {
     final products =
         widget.showFavs ? productsData.favoriteItems : productsData.items;
     return products.isEmpty
-        ? Column(
-            children: const [
+        ? ListView(
+            children: [
               SizedBox(
                 height: 100,
                 width: double.infinity,
                 child: Center(
-                  child: Text(
-                    "You don't have any favorite products.",
-                    style: TextStyle(fontSize: 18),
-                  ),
+                  child: widget.showFavs
+                      ? Text(
+                          "You don't have any favorite products.",
+                          style: TextStyle(fontSize: 18),
+                        )
+                      : Text(
+                          "No current product found",
+                          style: TextStyle(fontSize: 18),
+                        ),
                 ),
               ),
               Icon(Icons.hourglass_empty_sharp)

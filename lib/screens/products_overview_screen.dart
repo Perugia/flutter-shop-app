@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../providers/products.dart';
 import '../widgets/app_drawer.dart';
 import '../widgets/products_grid.dart';
 import '../widgets/badge.dart';
@@ -14,6 +15,8 @@ enum FilterOptions {
   All,
 }
 
+var productsOverviewScreenIsInit = true;
+
 class ProductsOverviewScreen extends StatefulWidget {
   const ProductsOverviewScreen({Key? key}) : super(key: key);
 
@@ -23,6 +26,16 @@ class ProductsOverviewScreen extends StatefulWidget {
 
 class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
   var _showOnlyFavorites = false;
+  var _isLoading = false;
+
+  @override
+  void initState() {
+    if (productsOverviewScreenIsInit) {
+      productsOverviewScreenIsInit = false;
+      _refreshProducts(context);
+    }
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -82,7 +95,43 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
         ],
       ),
       drawer: const AppDrawer(),
-      body: ProductsGrid(_showOnlyFavorites),
+      body: _isLoading
+          ? Center(child: CircularProgressIndicator())
+          : RefreshIndicator(
+              onRefresh: () => _refreshProducts(context),
+              child: ProductsGrid(_showOnlyFavorites),
+            ),
     );
+  }
+
+  Future<void> _refreshProducts(BuildContext context) async {
+    var status = true;
+    setState(() {
+      _isLoading = true;
+    });
+    await Provider.of<Products>(context, listen: false)
+        .fetchProducts()
+        .catchError((statusCode) {
+      status = false;
+      setState(() {
+        _isLoading = false;
+      });
+
+      return showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: Text("An error occurred!"),
+          content: Text("Something went wrong \n Error code : ${statusCode}"),
+          actions: [
+            TextButton(onPressed: Navigator.of(ctx).pop, child: Text("Close"))
+          ],
+        ),
+      );
+    });
+    if (status) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 }

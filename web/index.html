@@ -31,74 +31,80 @@
 
   <title>flutter_shop_app</title>
   <link rel="manifest" href="manifest.json">
-</head>
-<body>
-  <!-- This script installs service_worker.js to provide PWA functionality to
-       application. For more information, see:
-       https://developers.google.com/web/fundamentals/primers/service-workers -->
+
   <script>
+    // The value below is injected by flutter build, do not touch.
     var serviceWorkerVersion = null;
-    var scriptLoaded = false;
-    function loadMainDartJs() {
-      if (scriptLoaded) {
-        return;
-      }
-      scriptLoaded = true;
-      var scriptTag = document.createElement('script');
-      scriptTag.src = 'main.dart.js';
-      scriptTag.type = 'application/javascript';
-      document.body.append(scriptTag);
-    }
+  </script>
+  <!-- This script adds the flutter initialization JS code -->
+  <script src="flutter.js" defer></script>
 
-    if ('serviceWorker' in navigator) {
-      // Service workers are supported. Use them.
-      window.addEventListener('load', function () {
-        // Wait for registration to finish before dropping the <script> tag.
-        // Otherwise, the browser will load the script multiple times,
-        // potentially different versions.
-        var serviceWorkerUrl = 'flutter_service_worker.js?v=' + serviceWorkerVersion;
-        navigator.serviceWorker.register(serviceWorkerUrl)
-          .then((reg) => {
-            function waitForActivation(serviceWorker) {
-              serviceWorker.addEventListener('statechange', () => {
-                if (serviceWorker.state == 'activated') {
-                  console.log('Installed new service worker.');
-                  loadMainDartJs();
-                }
-              });
-            }
-            if (!reg.active && (reg.installing || reg.waiting)) {
-              // No active web worker and we have installed or are installing
-              // one for the first time. Simply wait for it to activate.
-              waitForActivation(reg.installing || reg.waiting);
-            } else if (!reg.active.scriptURL.endsWith(serviceWorkerVersion)) {
-              // When the app updates the serviceWorkerVersion changes, so we
-              // need to ask the service worker to update.
-              console.log('New service worker available.');
-              reg.update();
-              waitForActivation(reg.installing);
-            } else {
-              // Existing service worker is still good.
-              console.log('Loading app from service worker.');
-              loadMainDartJs();
-            }
-          });
+  <style>
+    @-webkit-keyframes sliding-tile {
+  0% {
+    -webkit-transform: translate(-50%, -50%) translate(-50%, -50%);
+            transform: translate(-50%, -50%) translate(-50%, -50%); }
+  25% {
+    -webkit-transform: translate(-50%, -50%) translate(50%, -50%);
+            transform: translate(-50%, -50%) translate(50%, -50%); }
+  50% {
+    -webkit-transform: translate(-50%, -50%) translate(50%, 50%);
+            transform: translate(-50%, -50%) translate(50%, 50%); }
+  75% {
+    -webkit-transform: translate(-50%, -50%) translate(-50%, 50%);
+            transform: translate(-50%, -50%) translate(-50%, 50%); }
+  100% {
+    -webkit-transform: translate(-50%, -50%) translate(-50%, -50%);
+            transform: translate(-50%, -50%) translate(-50%, -50%); } }
+@keyframes sliding-tile {
+  0% {
+    -webkit-transform: translate(-50%, -50%) translate(-50%, -50%);
+            transform: translate(-50%, -50%) translate(-50%, -50%); }
+  25% {
+    -webkit-transform: translate(-50%, -50%) translate(50%, -50%);
+            transform: translate(-50%, -50%) translate(50%, -50%); }
+  50% {
+    -webkit-transform: translate(-50%, -50%) translate(50%, 50%);
+            transform: translate(-50%, -50%) translate(50%, 50%); }
+  75% {
+    -webkit-transform: translate(-50%, -50%) translate(-50%, 50%);
+            transform: translate(-50%, -50%) translate(-50%, 50%); }
+  100% {
+    -webkit-transform: translate(-50%, -50%) translate(-50%, -50%);
+            transform: translate(-50%, -50%) translate(-50%, -50%); } }
 
-        // If service worker doesn't succeed in a reasonable amount of time,
-        // fallback to plaint <script> tag.
-        setTimeout(() => {
-          if (!scriptLoaded) {
-            console.warn(
-              'Failed to load app from service worker. Falling back to plain <script> tag.',
-            );
-            loadMainDartJs();
-          }
-        }, 4000);
+.sliding-tiles:after, .sliding-tiles:before {
+  -webkit-animation: sliding-tile 1.25s infinite linear;
+          animation: sliding-tile 1.25s infinite linear;
+  background-color: #08948c;
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  height: 20px;
+  width: 20px; }
+
+.sliding-tiles:after {
+  -webkit-animation: sliding-tile 1.25s -0.625s infinite linear;
+          animation: sliding-tile 1.25s -0.625s infinite linear; }
+  </style>
+
+</head>
+<body style="overflow: hidden;background-color: #f8f9fa;">
+  <div class="sliding-tiles"></div>
+  <script>
+    window.addEventListener('load', function(ev) {
+      // Download main.dart.js
+      _flutter.loader.loadEntrypoint({
+        serviceWorker: {
+          serviceWorkerVersion: serviceWorkerVersion,
+        }
+      }).then(function(engineInitializer) {
+        return engineInitializer.initializeEngine();
+      }).then(function(appRunner) {
+        return appRunner.runApp();
       });
-    } else {
-      // Service workers not supported. Just drop the <script> tag.
-      loadMainDartJs();
-    }
+    });
   </script>
 </body>
 </html>
